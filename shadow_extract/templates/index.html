@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Landing-shadow extractor</title>
+<style>
+  :root {
+    --bg: #10131a; --panel: #171b24; --line: #2a3140; --ink: #e7ecf3;
+    --muted: #9aa6b8; --accent: #57b8ff; --good: #57d6a0; --warn: #ffb454;
+    --bad: #ff6b7a;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font: 14px/1.5 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  header {
+    padding: 14px 20px; border-bottom: 1px solid var(--line);
+    display: flex; align-items: baseline; gap: 14px;
+  }
+  header h1 { font-size: 16px; margin: 0; font-weight: 650; letter-spacing: .2px; }
+  header .sub { color: var(--muted); font-size: 12px; }
+  main { padding: 16px 20px 40px; max-width: 1400px; margin: 0 auto; }
+  .row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .card {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
+    padding: 14px; flex: 1 1 320px; min-width: 300px;
+  }
+  .card h2 { font-size: 13px; margin: 0 0 10px; color: var(--muted);
+    text-transform: uppercase; letter-spacing: .8px; font-weight: 600; }
+  .controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  label.file { position: relative; overflow: hidden; }
+  button, select, label.file, input[type=number] {
+    background: #1e2430; color: var(--ink); border: 1px solid var(--line);
+    border-radius: 8px; padding: 7px 12px; font: inherit; cursor: pointer;
+  }
+  button:hover, label.file:hover { border-color: var(--accent); }
+  button.primary { background: #1d4d73; border-color: #2f6f9e; }
+  button:disabled { opacity: .5; cursor: default; }
+  input[type=file] { display: none; }
+  canvas { max-width: 100%; border-radius: 8px; display: block; background: #0b0e13; }
+  canvas.draw { cursor: crosshair; }
+  .stage { position: relative; display: inline-block; max-width: 100%; }
+  .badge {
+    display: inline-block; padding: 2px 7px; border-radius: 999px; font-size: 11px;
+    border: 1px solid var(--line); color: var(--muted);
+  }
+  .badge.good { color: var(--good); border-color: #2e5c49; }
+  .badge.warn { color: var(--warn); border-color: #6a522a; }
+  .badge.bad  { color: var(--bad);  border-color: #6a2f37; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+  .tile { background: #0f131a; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+  .tile .cap { padding: 6px 9px; font-size: 12px; color: var(--muted); border-top: 1px solid var(--line);
+    background: #12161e; }
+  .tile img { width: 100%; display: block; }
+  .diag { font-size: 12.5px; color: var(--muted); white-space: pre-wrap; }
+  .diag b { color: var(--ink); }
+  .slider { display: flex; align-items: center; gap: 8px; margin: 6px 0; }
+  .slider input[type=range] { flex: 1; accent-color: var(--accent); }
+  .slider span { min-width: 42px; text-align: right; font-variant-numeric: tabular-nums; color: var(--muted); }
+  .hint { color: var(--muted); font-size: 12px; }
+  .hidden { display: none; }
+  .legend { display:flex; gap:10px; flex-wrap:wrap; font-size:11.5px; color:var(--muted);
+    margin-top:8px; }
+  .legend i { width:10px; height:10px; border-radius:2px; display:inline-block; margin-right:4px;
+    vertical-align:middle; }
+  .status { font-size: 12.5px; color: var(--muted); min-height: 18px; }
+  .err { color: var(--bad); }
+</style>
+</head>
+<body>
+<header>
+  <h1>Landing-shadow extractor</h1>
+  <span class="sub">fixed-camera empty/product pair · separate foreground, occlusion&nbsp;t, bounce&nbsp;q, unexplained</span>
+</header>
+
+<main>
+  <div class="row">
+    <div class="card" style="flex: 1 1 460px;">
+      <h2>1 · Capture pair &amp; support region</h2>
+      <div class="controls" style="margin-bottom:10px;">
+        <select id="sampleSel"><option value="">— load a sample —</option></select>
+        <label class="file">empty image<input type="file" id="emptyFile" accept="image/*"></label>
+        <label class="file">product image<input type="file" id="productFile" accept="image/*"></label>
+        <button id="clearPoly">Clear region</button>
+      </div>
+      <div class="stage">
+        <canvas id="stage" class="draw" width="520" height="390"></canvas>
+      </div>
+      <div class="hint" style="margin-top:8px;">
+        Click to add points around the product <em>and its shadow</em>; double-click or
+        press <b>Enter</b> to close the region. Everything outside is left untouched.
+      </div>
+      <div class="controls" style="margin-top:10px;">
+        <select id="methodSel">
+          <option value="joint">joint — colour-identified (t, q)</option>
+          <option value="fit_only">fit-only — locked lit base ring</option>
+        </select>
+        <button class="primary" id="runBtn">Extract</button>
+        <span class="status" id="runStatus"></span>
+      </div>
+      <div class="badge" id="verdict" style="margin-top:10px;">no capture loaded</div>
+    </div>
+
+    <div class="card" style="flex: 1 1 360px;">
+      <h2>2 · Capture diagnosis</h2>
+      <div class="diag" id="diagBox">Load a pair and extract to see the exposure /
+registration / texture diagnosis. A shadow is only reported if the background
+itself has not changed.</div>
+      <div class="legend">
+        <span><i style="background:#2e5c49"></i>aligned &amp; exposure matched</span>
+        <span><i style="background:#6a522a"></i>corrected, fine detail reduced</span>
+        <span><i style="background:#6a2f37"></i>background changed — unreliable</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:16px;">
+    <h2>3 · Separated layers <span class="hint" style="text-transform:none;letter-spacing:0;">— each physical quantity on its own panel</span></h2>
+    <div class="grid" id="panels">
+      <div class="tile"><img id="imgCapture" alt=""><div class="cap">product capture</div></div>
+      <div class="tile"><img id="imgRecon" alt=""><div class="cap">reconstruction α·P + (1−α)·(t+q)B</div></div>
+      <div class="tile"><img id="imgFg" alt=""><div class="cap">foreground α·P over checkerboard</div></div>
+      <div class="tile"><img id="imgOccl" alt=""><div class="cap">shadow strength: occlusion 1−t</div></div>
+      <div class="tile"><img id="imgBounce" alt=""><div class="cap">shadow colour: additive bounce |q|</div></div>
+      <div class="tile"><img id="imgUnexp" alt=""><div class="cap">unexplained residual (not shadow)</div></div>
+    </div>
+    <div class="hint" id="unexpNote" style="margin-top:8px;"></div>
+  </div>
+
+  <div class="row" style="margin-top:16px;">
+    <div class="card" style="flex: 1 1 420px;">
+      <h2>4 · Parametric re-background</h2>
+      <div class="controls">
+        <select id="plateSel">
+          <option value="generated:paper">new plate — paper</option>
+          <option value="generated:wood">new plate — wood</option>
+          <option value="generated:marble">new plate — marble</option>
+          <option value="generated:fabric">new plate — fabric</option>
+          <option value="solid">solid colour</option>
+        </select>
+        <input type="color" id="solidColor" value="#c8c2b6" title="solid plate colour">
+        <label class="hint"><input type="checkbox" id="incProduct" checked> include product</label>
+      </div>
+      <div class="slider"><label style="min-width:120px">shadow opacity</label>
+        <input type="range" id="opacity" min="0" max="2" step="0.02" value="1">
+        <span id="opacityVal">1.00</span></div>
+      <div class="slider"><label style="min-width:120px">bounce scale</label>
+        <input type="range" id="bounce" min="0" max="2" step="0.02" value="1">
+        <span id="bounceVal">1.00</span></div>
+      <div class="stage" style="margin-top:10px;">
+        <canvas id="composeCanvas" width="520" height="390"></canvas>
+      </div>
+      <div class="hint" style="margin-top:6px;">
+        <b>shadow opacity</b> scales occlusion (multiplicative, t→1); <b>bounce scale</b>
+        scales added light (q). They are independent because a shadow is not a plain
+        black rectangle: re-lighting a different plate multiplies it by t and <em>adds</em>
+        q·B, it does not paint the old plate's darkening.
+      </div>
+    </div>
+
+    <div class="card" style="flex: 1 1 360px;">
+      <h2>5 · Physical-validity check</h2>
+      <div class="diag" id="validBox">
+        Reconstructing the <em>original</em> plate is a weak test: almost any
+        partition of the image can do it. The real test is whether the layers still
+        explain a <em>different</em> plate. Load a sample with a second capture and
+        choose “second plate (verification)” above.
+      </div>
+      <div style="margin-top:12px;" class="controls">
+        <button id="verifyBtn">Verify on second plate</button>
+        <span class="status" id="verifyStatus"></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:16px;">
+    <h2>Model</h2>
+    <div class="diag">
+In linear light:  B = β·E₀ (empty plate)  ·  I_ground = t·B + A  ·  q = A/B
+(product bounce per unit plate radiance).  The shadow is <b>multiplicative attenuation t</b>
+plus <b>additive light q·B</b>, not a black transparent overlay. Ratios are clipped to
+a reliable band (B above the noise floor) so I/B cannot blow up as B→0, and t is
+bounded to [t_min, 1]. Transfer to a new plate re-uses the same t and q:
+I₂ = B₂·(t + q). Because q is divided by the <em>original</em> plate B, it carries the
+product's bounce colour — not the original plate's texture.
+    </div>
+  </div>
+</main>
+
+<script>
+const $ = id => document.getElementById(id);
+const stage = $('stage');
+const sctx = stage.getContext('2d');
+const cctx = $('composeCanvas').getContext('2d');
+
+let state = {
+  session: null,
+  sample: null,
+  emptyImg: null,     // Image
+  productImg: null,   // Image
+  product2Img: null,
+  poly: [],           // image-space points
+  drawing: false,
+  scale: 1,
+  offX: 0, offY: 0,
+};
+
+function loadImageFromB64(b64) {
+  return new Promise((res, rej) => {
+    const im = new Image();
+    im.onload = () => res(im);
+    im.onerror = rej;
+    im.src = 'data:image/png;base64,' + b64;
+  });
+}
+function readFileAsURL(file) {
+  return new Promise((res, rej) => {
+    const r = new FileReader();
+    r.onload = () => res(r.result);
+    r.onerror = rej;
+    r.readAsDataURL(file);
+  });
+}
+function imgFromURL(url) {
+  return new Promise((res, rej) => { const im = new Image(); im.onload = () => res(im); im.onerror = rej; im.src = url; });
+}
+
+// ---------- sample list ----------
+fetch('/api/samples').then(r => r.json()).then(d => {
+  const sel = $('sampleSel');
+  d.samples.forEach(n => {
+    const o = document.createElement('option');
+    o.value = n; o.textContent = n.replace(/_/g, ' ');
+    sel.appendChild(o);
+  });
+});
+
+$('sampleSel').onchange = async e => {
+  const name = e.target.value;
+  if (!name) return;
+  setStatus('loading sample…');
+  const d = await (await fetch('/api/sample/' + encodeURIComponent(name))).json();
+  state.sample = name;
+  state.emptyImg = await loadImageFromB64(d.images.empty);
+  state.productImg = await loadImageFromB64(d.images.product);
+  state.product2Img = d.images.product2 ? await loadImageFromB64(d.images.product2) : null;
+  state.session = null;
+  state.poly = [];
+  drawStage();
+  setStatus('');
+  $('verdict').className = 'badge'; $('verdict').textContent = 'sample loaded — mark a region and extract';
+};
+
+$('emptyFile').onchange = async e => {
+  const f = e.target.files[0]; if (!f) return;
+  state.emptyImg = await imgFromURL(await readFileAsURL(f));
+  state.sample = null; state.session = null;
+  maybeDraw();
+};
+$('productFile').onchange = async e => {
+  const f = e.target.files[0]; if (!f) return;
+  state.productImg = await imgFromURL(await readFileAsURL(f));
+  state.sample = null; state.session = null;
+  state.poly = []; drawStage();
+};
+function maybeDraw() { if (state.productImg) drawStage(); }
+
+// ---------- stage canvas ----------
+function fitParams() {
+  const im = state.productImg || state.emptyImg;
+  const cw = stage.width, ch = stage.height;
+  if (!im) return { s: 1, ox: 0, oy: 0, w: cw, h: ch };
+  const s = Math.min(cw / im.width, ch / im.height);
+  const w = im.width * s, h = im.height * s;
+  return { s, ox: (cw - w) / 2, oy: (ch - h) / 2, w, h };
+}
+function drawStage() {
+  const { s, ox, oy, w, h } = fitParams();
+  state.scale = s; state.offX = ox; state.offY = oy;
+  sctx.fillStyle = '#0b0e13'; sctx.fillRect(0, 0, stage.width, stage.height);
+  const im = state.productImg || state.emptyImg;
+  if (im) sctx.drawImage(im, ox, oy, w, h);
+  if (state.poly.length) {
+    sctx.save();
+    sctx.beginPath();
+    state.poly.forEach((p, i) => {
+      const x = ox + p.x * s, y = oy + p.y * s;
+      i ? sctx.lineTo(x, y) : sctx.moveTo(x, y);
+    });
+    if (state.drawing) sctx.closePath();
+    sctx.fillStyle = 'rgba(87,184,255,.12)';
+    sctx.fill();
+    sctx.strokeStyle = '#57b8ff'; sctx.lineWidth = 2; sctx.stroke();
+    sctx.fillStyle = '#57b8ff';
+    state.poly.forEach(p => { sctx.beginPath(); sctx.arc(ox + p.x * s, oy + p.y * s, 3, 0, 7); sctx.fill(); });
+    sctx.restore();
+  }
+}
+function canvasToImage(ev) {
+  const r = stage.getBoundingClientRect();
+  const cxp = (ev.clientX - r.left) * (stage.width / r.width);
+  const cyp = (ev.clientY - r.top) * (stage.height / r.height);
+  return { x: (cxp - state.offX) / state.scale, y: (cyp - state.offY) / state.scale };
+}
+stage.addEventListener('click', ev => {
+  if (!state.productImg && !state.emptyImg) return;
+  state.poly.push(canvasToImage(ev));
+  state.drawing = true;
+  drawStage();
+});
+stage.addEventListener('dblclick', () => {
+  if (state.poly.length >= 3) { state.drawing = false; drawStage(); }
+});
+window.addEventListener('keydown', ev => {
+  if (ev.key === 'Enter' && state.poly.length >= 3) { state.drawing = false; drawStage(); }
+});
+$('clearPoly').onclick = () => { state.poly = []; state.drawing = false; drawStage(); };
+
+// ---------- extract ----------
+function setStatus(t, err) { const s = $('runStatus'); s.textContent = t; s.className = 'status' + (err ? ' err' : ''); }
+
+$('runBtn').onclick = async () => {
+  const method = $('methodSel').value;
+  if (state.sample) {
+    setStatus('extracting…');
+    const body = { method, support: state.poly.length >= 3 ? state.poly.map(p => [p.x, p.y]) : null };
+    const r = await fetch('/api/sample_extract/' + encodeURIComponent(state.sample), {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body)
+    });
+    if (!r.ok) { setStatus('extraction failed', true); return; }
+    const d = await r.json();
+    applyResult(d);
+    setStatus('done · ' + method);
+  } else if (state.emptyImg && state.productImg) {
+    setStatus('extracting…');
+    const fd = new FormData();
+    const eb = await fetch(state.emptyImg.src).then(r => r.blob());
+    const pb = await fetch(state.productImg.src).then(r => r.blob());
+    fd.append('empty', eb, 'empty.png');
+    fd.append('product', pb, 'product.png');
+    fd.append('method', method);
+    if (state.poly.length >= 3) fd.append('support', JSON.stringify(state.poly.map(p => [p.x, p.y])));
+    const r = await fetch('/api/extract', { method: 'POST', body: fd });
+    if (!r.ok) { setStatus('extraction failed', true); return; }
+    applyResult(await r.json());
+    setStatus('done · ' + method);
+  } else {
+    setStatus('load a sample or both images first', true);
+  }
+};
+
+function applyResult(d) {
+  state.session = d.session;
+  const p = d.panels;
+  $('imgCapture').src = 'data:image/png;base64,' + p.capture;
+  $('imgRecon').src = 'data:image/png;base64,' + p.reconstruct;
+  $('imgFg').src = 'data:image/png;base64,' + p.foreground;
+  $('imgOccl').src = 'data:image/png;base64,' + p.occlusion;
+  $('imgBounce').src = 'data:image/png;base64,' + p.bounce;
+  $('imgUnexp').src = 'data:image/png;base64,' + p.unexplained;
+  renderDiag(d.diag, d.info);
+  $('unexpNote').textContent = d.info.n_unexplained
+    ? `${d.info.n_unexplained} px inside the support are not explained by t or q — inspect the unexplained panel before trusting the shadow there.`
+    : 'No unexplained pixels inside the support: the pair is consistent with the t + q model.';
+  compose();
+}
+
+function renderDiag(diag, info) {
+  const v = $('verdict');
+  const changed = diag.background_changed;
+  v.className = 'badge ' + (changed ? 'bad' : 'good');
+  v.textContent = changed ? 'background changed — treat as unreliable'
+                          : 'background consistent · shadow separable';
+  const f = (x, n = 3) => (x === null || Number.isNaN(x)) ? '—' : (+x).toFixed(n);
+  const lines = [];
+  lines.push(`<b>registration</b> shift ${f(diag.shift_px[0], 2)}, ${f(diag.shift_px[1], 2)} px (confidence ${f(diag.shift_confidence, 2)})`);
+  lines.push(`<b>exposure</b> gain R ${f(diag.gain_rgb[0])} · G ${f(diag.gain_rgb[1])} · B ${f(diag.gain_rgb[2])} (residual ${f(diag.gain_residual)})`);
+  lines.push(`<b>focus</b> extra blur ${f(diag.blur_px, 2)} px`);
+  lines.push(`<b>noise</b> empty ${f(diag.noise_empty, 4)} · product ${f(diag.noise_product, 4)} · diff ${f(diag.noise_diff, 4)}`);
+  lines.push(`<b>texture</b> correlation ${f(diag.texture_corr, 2)} · std ratio ${f(diag.texture_ratio, 2)}`);
+  if (diag.notes && diag.notes.length) {
+    lines.push('<b>notes</b>');
+    diag.notes.forEach(n => lines.push('• ' + n));
+  }
+  lines.push(`<b>result</b> method ${info.method} · t ∈ [${f(info.t_min)}, ${f(info.t_max)}] · q_max ${f(info.q_max)} · unexplained ${info.n_unexplained} px`);
+  $('diagBox').innerHTML = lines.join('<br>');
+}
+
+// ---------- compose ----------
+function plateRequest() {
+  const val = $('plateSel').value;
+  if (val === 'solid') return { kind: 'solid', color: hexToRgb($('solidColor').value) };
+  const [_, style] = val.split(':');
+  return { kind: 'generated', style, seed: 7, base: [0.62, 0.58, 0.52], contrast: 0.22 };
+}
+function hexToRgb(h) { return [parseInt(h.slice(1,3),16), parseInt(h.slice(3,5),16), parseInt(h.slice(5,7),16)]; }
+
+async function compose() {
+  if (!state.session) return;
+  const opacity = +$('opacity').value, bounce = +$('bounce').value;
+  const useProduct = $('incProduct').checked;
+  const plate = plateRequest();
+  const r = await fetch('/api/compose', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ session: state.session, opacity, bounce, product: useProduct, plate })
+  });
+  if (!r.ok) return;
+  const d = await r.json();
+  const im = await loadImageFromB64(d.image);
+  $('composeCanvas').width = im.width; $('composeCanvas').height = im.height;
+  cctx.clearRect(0, 0, im.width, im.height);
+  cctx.drawImage(im, 0, 0);
+}
+
+['opacity', 'bounce'].forEach(k => {
+  $(k).oninput = () => {
+    $(k + 'Val').textContent = (+$(k).value).toFixed(2);
+    compose();
+  };
+});
+$('plateSel').onchange = compose;
+$('solidColor').oninput = compose;
+$('incProduct').onchange = compose;
+
+// ---------- second-plate verification ----------
+$('verifyBtn').onclick = async () => {
+  if (!state.sample) { $('verifyStatus').textContent = 'only built-in samples have a second plate'; return; }
+  if (state.product2Img) {
+    // Composite the extracted layers onto the second empty plate, and compare with
+    // the real second product capture. We send the second empty plate as a solid
+    // re-light by uploading it through the compose endpoint as a generated plate is
+    // not possible, so instead call a dedicated route.
+    $('verifyStatus').textContent = 'rendering…';
+    const r = await fetch('/api/verify/' + encodeURIComponent(state.sample), {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ session: state.session })
+    });
+    if (!r.ok) { $('verifyStatus').textContent = 'verification failed'; return; }
+    const d = await r.json();
+    $('composeCanvas').width = d.width; $('composeCanvas').height = d.height;
+    const im = await loadImageFromB64(d.image);
+    cctx.drawImage(im, 0, 0);
+    $('verifyStatus').textContent = `PSNR ${d.psnr.toFixed(1)} dB · SSIM ${d.ssim.toFixed(3)} (vs. independent second capture)`;
+    $('validBox').innerHTML =
+      `The same t and q were applied to the <b>second plate</b> and compared with a real capture on it. ` +
+      `Transfer PSNR <b>${d.psnr.toFixed(1)} dB</b>, SSIM <b>${d.ssim.toFixed(3)}</b>. ` +
+      `A layer that merely copied the first plate's darkening cannot match a different texture — ` +
+      `this is the check that the shadow is physically transferable, not just a repainted blob.`;
+  } else {
+    $('verifyStatus').textContent = 'this sample has no second plate';
+  }
+};
+
+// initial
+drawStage();
+</script>
+</body>
+</html>
