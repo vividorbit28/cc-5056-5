@@ -80,3 +80,76 @@ python3 -m pytest tests/ -q
 - Anti-black-halo: matte from residual, product-colour fill at fringes.
 - Background texture is never absorbed into `t` (smooth, ratio-weighted, and
   checked by the transfer texture-leak metric).
+
+## Asset format (layer file upgrade v1 → v2.0)
+
+Shadow/foreground intermediates are stored as versioned **shadow-asset**
+bundles (see `shadow_extract/asset.py`).  Everything old intermediates left
+implicit is now declared explicitly and verified on load:
+
+- **premultiplied state** — every layer carries an explicit boolean
+  `premultiplied`; the foreground colour is stored premultiplied (`alpha·P`).
+  A missing flag or a content-hash mismatch raises an error instead of
+  defaulting;
+- **plane coordinates** — a `plane` block declares frame, origin, pixel scale
+  and the camera projection, so a moved product is placed geometrically;
+- **source revision** — the git revision of the converting code and the
+  sha256 of every source image/intermediate.
+
+### Migrating old layer files
+
+`shadow_extract/legacy.py` detects three v1 shapes and offers two paths:
+
+| old shape | reversible path | underdetermined path |
+| --- | --- | --- |
+| full `t, q, alpha` | lossless v2 migration | — |
+| baked darkening + source plate | linear achromatic split (`q=0`, original map kept) | without the plate: layer kept, status `needs_author_claim` |
+| merged luminance only | achromatic `t` only when a plate is present | colour split impossible: `t` stays open, status `pending_explanation`, single channel preserved separately |
+
+The underdetermined layer re-opens for continued editing
+(`reopen_underdetermined_edit` / `save_underdetermined_edit`) and re-locks its
+hashes.  A legacy shadow colour is **never** treated as a transmission
+coefficient.
+
+```bash
+python3 scripts/make_legacy_fixtures.py --sample soft_paper
+python3 scripts/build_assets.py     # writes assets/ + assets/build-lock.json
+```
+
+The build lock pins every output hash; re-running it in a clean directory
+recomputes the hashes and fails on drift rather than hiding it.
+
+## Contact shadow (new path)
+
+`shadow_extract/contact.py` derives the landing shadow that belongs to the
+product: a smooth, strongly-occluding band touching the footprint.  Shadow
+pixels mixed with floor texture, or disconnected from the footprint, are
+**returned to the author** (`contact_unclaimed`) instead of being moved.
+
+When the artist moves the product, the `GroundTracker` hands over a new
+contact region: the claimed shadow translates with the product while the
+unclaimed part stays with the floor.  Contact verification is an actual
+computation (rim coverage, gap in pixels, measured shadow contribution
+`1 − mean(I/B)`, and foreground retention); failures are surfaced through the
+contact-shadow interface, never substituted with a painted ellipse.
+
+### Graphical entry points (web UI, section 6)
+
+- **Derive contact shadow** — claimed vs returned-to-author overlay;
+- **Move product ◀ / ▶** — ground-tracker hand-over with the new region bbox;
+- **Edit region & verify contact** — polygon edit, composite, then verify
+  independent shadow/object contact and foreground retention;
+- **Export two floor textures** — two different floors, with a
+  texture-carry diagnostic that reveals whether the original tile was moved;
+- **Convert to v2 asset** — write the manifest/layers/contact bundle.
+
+The composition canvas always renders through the contact-shadow
+implementation.  The CLI only *assists* these same contact operations:
+
+```bash
+python3 -m shadow_extract.cli derive --empty e.png --product p.png --gt gt.npz
+python3 -m shadow_extract.cli move --asset assets/soft_paper --dx 12 --dy 0
+python3 -m shadow_extract.cli verify --asset assets/soft_paper --plate e2.png
+python3 -m shadow_extract.cli export-composite --asset assets/soft_paper \
+        --plate floor.png --out comp.png
+```

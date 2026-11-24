@@ -1,0 +1,629 @@
+{
+  "tool_version": "0.2.0",
+  "git_revision": "ff82d4176b812e69b7f63e8f1a97ca3ab0761aad",
+  "revision_note": "working tree dirty at conversion",
+  "n_assets": 11,
+  "assets": [
+    {
+      "name": "dark_marble",
+      "bundle": "dark_marble",
+      "manifest_sha256": "ba3e455ec59f0fd4ca0e10f0e6eb6060f765deafc6fc319e7573c769074cf6c9",
+      "layer_files": [
+        {
+          "file": "layer_t.npy",
+          "sha256": "9a051bb2cbd9c4284e28e7e586fb7b5d56784dbda356359ea2c89699cad11cf5",
+          "status": "confirmed",
+          "premultiplied": false
+        },
+        {
+          "file": "layer_q.npy",
+          "sha256": "5b563f2e6f707a5d56da7546896039975163fb2da851f687a0f49308de5845aa",
+          "status": "confirmed",
+          "premultiplied": false
+        },
+        {
+          "file": "layer_alpha.npy",
+          "sha256": "26bac3ebba078a4133666c421f794e0b4b1a378544045d2a13bbd647497db975",
+          "status": "confirmed",
+          "premultiplied": false
+        },
+        {
+          "file": "layer_foreground_premult.npy",
+          "sha256": "ba4ea5005cd92c2eada09e45650fe89ecbda24786a899dcb791ec679f7954b4b",
+          "status": "confirmed",
+          "premultiplied": true
+        },
+        {
+          "file": "layer_contact_unclaimed.npy",
+          "sha256": "521ebb9421faba09451813031864fe7ac0a81f01ed65f3cddc18e34161d21f36",
+          "status": "confirmed",
+          "premultiplied": false
+        }
+      ],
+      "source_files": [
+        {
+          "role": "empty",
+          "path": "empty.png",
+          "sha256": "4337afcd05ecd9a6cb6dfaf84e9a0111d19535f8abf6e86ee74cf19b9cd031f9"
+        },
+        {
+          "role": "gt_npz",
+          "path": "gt.npz",
+          "sha256": "9bff066535ec3ecc41eedd987a2b9e0d00c24b5dc48cf7de22e6f213399c6613"
+        },
+        {
+          "role": "product",
+          "path": "product.png",
+          "sha256": "1a4fbfa7da34fe5cdac65710e4b8b81cd2478218c65aee1a37ce76ebf1577c8c"
+        }
+      ],
+      "migration_paths": [
+        "reversible:full_decomposition"
+      ]
+    },
+    {
+      "name": "hard_wood",
+      "bundle": "hard_wood",
+      "manifest_sha256": "96f96d9e807b38e8d253216451ad406032501fa45a88c9ada46c632245ca8a2d",
+      "layer_files": [
+        {
+          "file": "layer_t.npy",
+          "sha256": "31f0d675a5e5a94db4b47f41b10b3ad98f46d84cd632d0aa80da0e27f8aba177",
+          "status": "confirmed",
+          "premultiplied": false
+        },
+        {
+          "file": "layer_q.npy",
+          "sha256": "8981816a9824faf5086c54e0c4157f83beab4c3f5623f077c66bc8436516fb99",
+          "status": "confirmed",
+          "premultiplied": false
+        },
+        {
+          "file": "layer_alpha.npy",
+          "sha256": "1cd54bdd85790945eb674bfbcfeadb003776d6b861e1dfbde34f269a509c30dd",
+          "status": "confirmed",
+          "premultiplied": false
+        },
+        {
+          "file": "layer_foreground_premult.npy",
+          "sha256": "b5172108b7e2a6ce91efc64a4b56d57bec7dfac4f9a0c59adf27387ed12137b1",
+          "status": "confirmed",
+          "premultiplied": true
+        },
+        {
+          "file": "layer_contact_unclaimed.npy",
+          "sha256": "f1ff19d7dd58ba68c8419fd7a92b5e2f2627069a007317d2448eae3b02bd758b",
+          "status": "confirmed",
+          "premultiplied": false
+        }
+      ],
+      "source_files": [
+        {
+          "role": "empty",
+          "path": "empty.png",
+          "sha256": "78f4f6a0a428787d624a450cc963078332a722c015a350fbc55012847bc9537b"
+        },
+        {
+          "role": "gt_npz",
+          "path": "gt.npz",
+          "sha256": "cf2635c2c2d8fc44e9d6a61280c1de26ef644f09bcd0beb8e137a2c94d6111c7"
+        },
+        {
+          "role": "product",
+          "path": "product.png",
+          "sha256": "8f9e6bb2c532c48616385468fb54305a3e79eb534d043bcb47319aaf0131ca7a"
+        }
+      ],
+      "migration_paths": [
+        "reversible:full_decomposition"
+      ]
+    },
+    {
+      "name": "mug_light",
+      "bundle": "mug_light",
+      "manifest_sha256": "1d111d6baee77186ba95052b003044b922ba0ba7f758bebc5ae41acfa95abb4f",
+      "layer_files": [
+        {
+          "file": "layer_t.npy",
+          "sha256": "43b5493589c596a8cdbfc41b118d8e5e438d9b496a6955d54224d3b017b687c3",
+          "status": "confirmed",
+          "premultiplied": false
+        },
+        {
+          "file": "layer_q.npy",
+          "sha256": "25788cdfc6fb37aefddb74e6a61461d1ddb6d60f53e6056ef12b432f413a9100",
+          "status": "confirmed",
+          "premultiplied": false
+        },
+        {
+          "file": "layer_alpha.npy",
+          "sha256": "8cbc642a5e0d85758608f99aa509cc28e90dfe284f2938fe721992bb9cfd2331",
+          "status": "confirmed",
+          "premultiplied": false
+        },
+        {
+          "file": "layer_foreground_premult.npy",
+          "sha256": "01ca1ca58f3422b81167e46ded43d6334eb1a7b5f226e1b1016fafb10352f26b",
+          "status": "confirmed",
+          "premultiplied": true
+        },
+        {
+          "file": "layer_contact_unclaimed.npy",
+          "sha256": "83281d8299fd29758fafa0ad1436549ea3375f2c6ffaf8a5b770fe4cc3304f22",
+          "status": "confirmed",
+          "premultiplied": false
+        }
+      ],
+      "source_files": [
+        {
+          "role": "empty",
+          "path": "empty.png",
+          "sha256": "b4dde5f90e5ab7fd32130d3c6142e5e6dd67e2bac3493daf790903a0987bf365"
+        },
+        {
+          "role": "gt_npz",
+          "path": "gt.npz",
+          "sha256": "65db057d859b4988114133b5c0b729e35d970c946a0dfceb783fd62fd22b7af9"
+        },
+        {
+          "role": "product",
+          "path": "product.png",
+          "sha256": "53a43f5cfe58c1f06e5d4092b4ced9ea37bae189962f537db8fbd1e5acfa871f"
+        }
+      ],
+      "migration_paths": [
+        "reversible:full_decomposition"
+      ]
+    },
+    {
+      "name": "penumbra_can",
+      "bundle": "penumbra_can",
+      "manifest_sha256": "2dc9081d027ee8118e9ea102e66809a5090a3a5d41e16a65d86cac89e325034c",
+      "layer_files": [
+        {
+          "file": "layer_t.npy",
+          "sha256": "c6bf88d8aecc4485367ffc87e49a090bee311c4e9e2d60105eb070fee8a63423",
+          "status": "confirmed",
+          "premultiplied": false
+        },
+        {
+          "file": "layer_q.npy",
+          "sha256": "a49bf112131ada4d275c11c2da29deb7f5345baaee9af45f301b8af98ba096b4",
+          "status": "confirmed",
+          "premultiplied": false
+        },
+        {
+          "file": "layer_alpha.npy",
+          "sha256": "1cd54bdd85790945eb674bfbcfeadb003776d6b861e1dfbde34f269a509c30dd",
+          "status": "confirmed",
+          "premultiplied": false
+        },
+        {
+          "file": "layer_foreground_premult.npy",
+          "sha256": "b5172108b7e2a6ce91efc64a4b56d57bec7dfac4f9a0c59adf27387ed12137b1",
+          "status": "confirmed",
+          "premultiplied": true
+        },
+        {
+          "file": "layer_contact_unclaimed.npy",
+          "sha256": "da1b8a6cea3df5cc7e8e41542d24fa7a99164897a7170d361b16ed7fbed7df20",
+          "status": "confirmed",
+          "premultiplied": false
+        }
+      ],
+      "source_files": [
+        {
+          "role": "empty",
+          "path": "empty.png",
+          "sha256": "d47fe80cf8c1c4df9b79dbc66d7d14040695dc496210b4df2c0cf170d075b860"
+        },
+        {
+          "role": "gt_npz",
+          "path": "gt.npz",
+          "sha256": "1f47517b61dd4d801433545553b62145b18e3eb8917650f5536cc8f47cede8b6"
+        },
+        {
+          "role": "product",
+          "path": "product.png",
+          "sha256": "c90142f8cc8ea6c354067ec3b2b07510692b4d9e7201133c6fd2bf12996c3ffe"
+        }
+      ],
+      "migration_paths": [
+        "reversible:full_decomposition"
+      ]
+    },
+    {
+      "name": "soft_edge_ball",
+      "bundle": "soft_edge_ball",
+      "manifest_sha256": "6081c0539a814c53b95db9c3178bc7c733deb5625bf98ce56115620ecf09086d",
+      "layer_files": [
+        {
+          "file": "layer_t.npy",
+          "sha256": "32fe0c48387fa2cee53ad949d04ebfd9b9dbf6a094b48e3b71908a51942119cd",
+          "status": "confirmed",
+          "premultiplied": false
+        },
+        {
+          "file": "layer_q.npy",
+          "sha256": "a625ed50ec6c662e7de3cae44ea39f42ec2cabd455b6b6c641e46d1f9ef52ce3",
+          "status": "confirmed",
+          "premultiplied": false
+        },
+        {
+          "file": "layer_alpha.npy",
+          "sha256": "c485353cdfd4cd3c3c4871a198f746c040e9e41e6d15343e58bf061e919208ab",
+          "status": "confirmed",
+          "premultiplied": false
+        },
+        {
+          "file": "layer_foreground_premult.npy",
+          "sha256": "be25f0c767d2580b569ae09dab40fbb1b1203e20df584761b645c8f8fad78417",
+          "status": "confirmed",
+          "premultiplied": true
+        },
+        {
+          "file": "layer_contact_unclaimed.npy",
+          "sha256": "e54617281a32fc767edf3904dc770e4f45c4c8f27ac92ff6075bd5aa5f934ecf",
+          "status": "confirmed",
+          "premultiplied": false
+        }
+      ],
+      "source_files": [
+        {
+          "role": "empty",
+          "path": "empty.png",
+          "sha256": "57cb8147598ef282e0c767d7b4697ef8322583e220f7d4f943167e213bac0f1b"
+        },
+        {
+          "role": "gt_npz",
+          "path": "gt.npz",
+          "sha256": "607862642305c4c85f9534d9166c69101e20f7ede674c65b9002f6420eb88496"
+        },
+        {
+          "role": "product",
+          "path": "product.png",
+          "sha256": "e33cdebd711a7ef9718cefd32ac3372b1914a1178ca76b125cbc939a415b7bac"
+        }
+      ],
+      "migration_paths": [
+        "reversible:full_decomposition"
+      ]
+    },
+    {
+      "name": "soft_paper",
+      "bundle": "soft_paper",
+      "manifest_sha256": "2585317e00adb4053f96c2f87b06867a584dae58f6bd22b424f3064fe2d626e3",
+      "layer_files": [
+        {
+          "file": "layer_t.npy",
+          "sha256": "bb2a3d899685718d9b0f3a1ee4f93631db7f6d23d4158f55f21e2ed56e91cc39",
+          "status": "confirmed",
+          "premultiplied": false
+        },
+        {
+          "file": "layer_q.npy",
+          "sha256": "4dc78c54b6d253d5f86871dd17d4a3796e9e13114f11824e593ec4b175eaf457",
+          "status": "confirmed",
+          "premultiplied": false
+        },
+        {
+          "file": "layer_alpha.npy",
+          "sha256": "0efd9b6988f9b959b5dc58c46a7715f6ed026084f7725173e8f1334b0234e5af",
+          "status": "confirmed",
+          "premultiplied": false
+        },
+        {
+          "file": "layer_foreground_premult.npy",
+          "sha256": "30f02d6385f202e79656ab8323137c9c561527e3938cab703b8e27b14fcad91f",
+          "status": "confirmed",
+          "premultiplied": true
+        },
+        {
+          "file": "layer_contact_unclaimed.npy",
+          "sha256": "75751baaae3fcd65d9047a214497c326734615290fb341c9c8b03bc87c254c93",
+          "status": "confirmed",
+          "premultiplied": false
+        }
+      ],
+      "source_files": [
+        {
+          "role": "empty",
+          "path": "empty.png",
+          "sha256": "8066b204e13482b30c86589a483258fa8c236f6e48c3cf186366ce2b787a2b42"
+        },
+        {
+          "role": "gt_npz",
+          "path": "gt.npz",
+          "sha256": "fb8d9a309d7c06b07a34a423def7e3caa78f33a6e3a983e700a5cbba416faa91"
+        },
+        {
+          "role": "product",
+          "path": "product.png",
+          "sha256": "5b09fe68b3286a5853c4b21bdc34620abd715bd88d88e9b9d304a17d8f12ac2d"
+        }
+      ],
+      "migration_paths": [
+        "reversible:full_decomposition"
+      ]
+    },
+    {
+      "name": "soft_paper_legacy_soft_paper__baked",
+      "bundle": "soft_paper_legacy_soft_paper__baked",
+      "manifest_sha256": "6ff5babf0ada8b20334129e511cff1fb4150af2f129e08fc4a03971e459941a4",
+      "layer_files": [
+        {
+          "file": "layer_t.npy",
+          "sha256": "bb2a3d899685718d9b0f3a1ee4f93631db7f6d23d4158f55f21e2ed56e91cc39",
+          "status": "confirmed",
+          "premultiplied": false
+        },
+        {
+          "file": "layer_q.npy",
+          "sha256": "101caa64c6a34501d544c942218015fcb43d73cca035e7711b2de66fd104bac0",
+          "status": "confirmed",
+          "premultiplied": false
+        },
+        {
+          "file": "layer_alpha.npy",
+          "sha256": "c81707fbf5b18e1393322c021d6a23354250094807719deaeb2c76a4d91ccc2f",
+          "status": "confirmed",
+          "premultiplied": false
+        },
+        {
+          "file": "layer_foreground_premult.npy",
+          "sha256": "4e50c9ff0135173b562042192bbf43f65de704c2327258271162fe56de359490",
+          "status": "confirmed",
+          "premultiplied": true
+        },
+        {
+          "file": "layer_legacy_shadow_luma.npy",
+          "sha256": "bb2a3d899685718d9b0f3a1ee4f93631db7f6d23d4158f55f21e2ed56e91cc39",
+          "status": "needs_author_claim",
+          "premultiplied": false
+        }
+      ],
+      "source_files": [
+        {
+          "role": "empty",
+          "path": "empty.png",
+          "sha256": "8066b204e13482b30c86589a483258fa8c236f6e48c3cf186366ce2b787a2b42"
+        },
+        {
+          "role": "legacy_layer",
+          "path": "soft_paper__baked.npz",
+          "sha256": "0f1292ebc4514bd417d9cc72070300d39b12d368e832be9610693bbad249f524"
+        },
+        {
+          "role": "product",
+          "path": "product.png",
+          "sha256": "5b09fe68b3286a5853c4b21bdc34620abd715bd88d88e9b9d304a17d8f12ac2d"
+        }
+      ],
+      "migration_paths": [
+        "reversible:baked_plane"
+      ]
+    },
+    {
+      "name": "soft_paper_legacy_soft_paper__full",
+      "bundle": "soft_paper_legacy_soft_paper__full",
+      "manifest_sha256": "e01595cb02571364be3b4a1de24a569ba11a4bf7c13e491287c0889a2cef4200",
+      "layer_files": [
+        {
+          "file": "layer_t.npy",
+          "sha256": "bb2a3d899685718d9b0f3a1ee4f93631db7f6d23d4158f55f21e2ed56e91cc39",
+          "status": "confirmed",
+          "premultiplied": false
+        },
+        {
+          "file": "layer_q.npy",
+          "sha256": "4dc78c54b6d253d5f86871dd17d4a3796e9e13114f11824e593ec4b175eaf457",
+          "status": "confirmed",
+          "premultiplied": false
+        },
+        {
+          "file": "layer_alpha.npy",
+          "sha256": "0efd9b6988f9b959b5dc58c46a7715f6ed026084f7725173e8f1334b0234e5af",
+          "status": "confirmed",
+          "premultiplied": false
+        },
+        {
+          "file": "layer_foreground_premult.npy",
+          "sha256": "30f02d6385f202e79656ab8323137c9c561527e3938cab703b8e27b14fcad91f",
+          "status": "confirmed",
+          "premultiplied": true
+        }
+      ],
+      "source_files": [
+        {
+          "role": "empty",
+          "path": "empty.png",
+          "sha256": "8066b204e13482b30c86589a483258fa8c236f6e48c3cf186366ce2b787a2b42"
+        },
+        {
+          "role": "legacy_layer",
+          "path": "soft_paper__full.npz",
+          "sha256": "c455dc39c3fc7a8d5faf79200eb0206af2be7a36ce3913bf8260773734adb31b"
+        },
+        {
+          "role": "product",
+          "path": "product.png",
+          "sha256": "5b09fe68b3286a5853c4b21bdc34620abd715bd88d88e9b9d304a17d8f12ac2d"
+        }
+      ],
+      "migration_paths": [
+        "reversible:full_decomposition"
+      ]
+    },
+    {
+      "name": "soft_paper_legacy_soft_paper__merged",
+      "bundle": "soft_paper_legacy_soft_paper__merged",
+      "manifest_sha256": "2d9f466c14ebcc8b8cda3770a3b4e92a564f7b4bfa119cd530b0c5ac5afcc280",
+      "layer_files": [
+        {
+          "file": "layer_t.npy",
+          "sha256": "7e9381048dd99f26ea59a2ef6e43ad7bcad16757d7bc20dd9336f6e843319c70",
+          "status": "pending_explanation",
+          "premultiplied": false
+        },
+        {
+          "file": "layer_q.npy",
+          "sha256": "101caa64c6a34501d544c942218015fcb43d73cca035e7711b2de66fd104bac0",
+          "status": "pending_explanation",
+          "premultiplied": false
+        },
+        {
+          "file": "layer_alpha.npy",
+          "sha256": "c81707fbf5b18e1393322c021d6a23354250094807719deaeb2c76a4d91ccc2f",
+          "status": "confirmed",
+          "premultiplied": false
+        },
+        {
+          "file": "layer_foreground_premult.npy",
+          "sha256": "4e50c9ff0135173b562042192bbf43f65de704c2327258271162fe56de359490",
+          "status": "confirmed",
+          "premultiplied": true
+        },
+        {
+          "file": "layer_legacy_shadow_luma.npy",
+          "sha256": "bb2a3d899685718d9b0f3a1ee4f93631db7f6d23d4158f55f21e2ed56e91cc39",
+          "status": "needs_author_claim",
+          "premultiplied": false
+        }
+      ],
+      "source_files": [
+        {
+          "role": "empty",
+          "path": "empty.png",
+          "sha256": "8066b204e13482b30c86589a483258fa8c236f6e48c3cf186366ce2b787a2b42"
+        },
+        {
+          "role": "legacy_layer",
+          "path": "soft_paper__merged.npz",
+          "sha256": "373c61d19589c0afb65b8bcb654930f9b6f5783b6c00685ffb904eb09130ed35"
+        },
+        {
+          "role": "product",
+          "path": "product.png",
+          "sha256": "5b09fe68b3286a5853c4b21bdc34620abd715bd88d88e9b9d304a17d8f12ac2d"
+        }
+      ],
+      "migration_paths": [
+        "underdetermined:merged_luma"
+      ]
+    },
+    {
+      "name": "textured_fabric",
+      "bundle": "textured_fabric",
+      "manifest_sha256": "bb60917145844cfaab00378afc028a995aaf7020fcc92986e1bce20af5b66285",
+      "layer_files": [
+        {
+          "file": "layer_t.npy",
+          "sha256": "d98def9f4d93068565a9312aa79ece59523489aa52034e26c385fba1a39a5697",
+          "status": "confirmed",
+          "premultiplied": false
+        },
+        {
+          "file": "layer_q.npy",
+          "sha256": "b6098f24ad286ca8b5654f1d709fe63eed2e92fbe51d782eacf064a6fc2cdb65",
+          "status": "confirmed",
+          "premultiplied": false
+        },
+        {
+          "file": "layer_alpha.npy",
+          "sha256": "5730081939ba2c5fefd8d48a19a9c24f03d82ec9e6b25ff0261fda4cdd75f2af",
+          "status": "confirmed",
+          "premultiplied": false
+        },
+        {
+          "file": "layer_foreground_premult.npy",
+          "sha256": "f1fcb708ac1b827ea87ed69347c6f72cee11013bb63d8a131a69523f7a4491fb",
+          "status": "confirmed",
+          "premultiplied": true
+        },
+        {
+          "file": "layer_contact_unclaimed.npy",
+          "sha256": "ebf508303a349d41638d4b57950112fe09332977ac98f5c135bfe186147d4144",
+          "status": "confirmed",
+          "premultiplied": false
+        }
+      ],
+      "source_files": [
+        {
+          "role": "empty",
+          "path": "empty.png",
+          "sha256": "9ba4455f86d7e8bd7cbdce665d0557ef18035818915d8fda272a0dd9e7daede2"
+        },
+        {
+          "role": "gt_npz",
+          "path": "gt.npz",
+          "sha256": "77c10334aef909db1b050953806d6fd67897757b4cf6ba498573155c51d76c87"
+        },
+        {
+          "role": "product",
+          "path": "product.png",
+          "sha256": "65fbdb79f584cb639e88dd1195139be6e35b1e1deb905eefbc8eece3fbd32039"
+        }
+      ],
+      "migration_paths": [
+        "reversible:full_decomposition"
+      ]
+    },
+    {
+      "name": "vase_fabric",
+      "bundle": "vase_fabric",
+      "manifest_sha256": "30929c6613b2f68b6c35011bb22a318c98bddd86d69dba03e3501fae80c6be42",
+      "layer_files": [
+        {
+          "file": "layer_t.npy",
+          "sha256": "61a83fe373b9843ed5eee0c9fc7d4b2506269339960b3563cab822b65a553c3d",
+          "status": "confirmed",
+          "premultiplied": false
+        },
+        {
+          "file": "layer_q.npy",
+          "sha256": "ad8ae0d01aa5bd6ae45bb9072fe6a75460f6133379e2acff47012acd6cf460ed",
+          "status": "confirmed",
+          "premultiplied": false
+        },
+        {
+          "file": "layer_alpha.npy",
+          "sha256": "3d2bbe28aa33844ede890d182f903ef984613ca017c354d369c6a3b0e3e9115d",
+          "status": "confirmed",
+          "premultiplied": false
+        },
+        {
+          "file": "layer_foreground_premult.npy",
+          "sha256": "83871a99c7603b7f023579029075df482a0f96312b3aa24afaae1f8d5b451f98",
+          "status": "confirmed",
+          "premultiplied": true
+        },
+        {
+          "file": "layer_contact_unclaimed.npy",
+          "sha256": "9772083fc501e0fea86575acc7e7a4265466eac3f9b1370960ea9b8a909e20bd",
+          "status": "confirmed",
+          "premultiplied": false
+        }
+      ],
+      "source_files": [
+        {
+          "role": "empty",
+          "path": "empty.png",
+          "sha256": "281623dda2cff66f37937a3f7882f670ef1d3b0477879a05e101e2a734a02c0a"
+        },
+        {
+          "role": "gt_npz",
+          "path": "gt.npz",
+          "sha256": "cc3aa02ab99fdeb27d0d8974d1d221f44198da6dfc84732614d4817c3263a83a"
+        },
+        {
+          "role": "product",
+          "path": "product.png",
+          "sha256": "267f89f04c311a002f19e914b435f10116596cddb28b87f866fae01c9d133f72"
+        }
+      ],
+      "migration_paths": [
+        "reversible:full_decomposition"
+      ]
+    }
+  ]
+}

@@ -23,3 +23,12 @@ __pycache__/
 *.log
 .env
 .env.*
+
+# Generated v2 asset bundles: layer data is reproducible via the migration;
+# the build lock (build-lock.json) and the README are kept under version control.
+assets/*/
+!assets/README.md
+!assets/build-lock.json
+
+# Generated legacy v1 fixtures (rebuilt by scripts/make_legacy_fixtures.py).
+samples/legacy_v1/

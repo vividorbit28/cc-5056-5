@@ -176,6 +176,33 @@ itself has not changed.</div>
   </div>
 
   <div class="card" style="margin-top:16px;">
+    <h2>6 · Contact shadow (new path)</h2>
+    <div class="controls">
+      <button id="contactDerive">Derive contact shadow</button>
+      <button id="contactMoveLeft">Move product ◀</button>
+      <button id="contactMoveRight">▶ Move product</button>
+      <button id="contactCheck">Edit region &amp; verify contact</button>
+      <button id="contactExport">Export two floor textures</button>
+      <button id="contactAsset">Convert to v2 asset</button>
+    </div>
+    <div class="slider"><label style="min-width:120px">occlusion threshold</label>
+      <input type="range" id="contactOccl" min="0.01" max="0.25" step="0.01" value="0.04">
+      <span id="contactOcclVal">0.04</span></div>
+    <div class="stage" style="margin-top:10px;">
+      <canvas id="contactCanvas" width="520" height="390"></canvas>
+    </div>
+    <div class="legend">
+      <span><i style="background:#3cc878"></i>claimed — moves with the product</span>
+      <span><i style="background:#dca03c"></i>unclaimed — floor texture mixed, returned to author</span>
+    </div>
+    <div class="diag" id="contactBox" style="margin-top:8px;">
+      Derive the contact shadow to see which landing pixels belong to the product.
+      The graphical entries here are the supported contact-shadow workflow; the CLI
+      only assists these same operations.
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:16px;">
     <h2>Model</h2>
     <div class="diag">
 In linear light:  B = β·E₀ (empty plate)  ·  I_ground = t·B + A  ·  q = A/B
@@ -452,6 +479,112 @@ $('verifyBtn').onclick = async () => {
     $('verifyStatus').textContent = 'this sample has no second plate';
   }
 };
+
+// ---------- contact shadow (new path) ----------
+const contactCanvas = $('contactCanvas');
+const xctx = contactCanvas.getContext('2d');
+let contactImg = null;
+let editPoints = [];
+
+function drawContact() {
+  xctx.fillStyle = '#0b0e13';
+  xctx.fillRect(0, 0, contactCanvas.width, contactCanvas.height);
+  if (contactImg) {
+    const s = Math.min(contactCanvas.width / contactImg.width,
+                       contactCanvas.height / contactImg.height);
+    const w = contactImg.width * s, h = contactImg.height * s;
+    xctx.drawImage(contactImg, (contactCanvas.width - w) / 2, (contactCanvas.height - h) / 2, w, h);
+  }
+  if (editPoints.length) {
+    xctx.strokeStyle = '#ffd166'; xctx.beginPath();
+    editPoints.forEach((p, i) => i ? xctx.lineTo(p.x, p.y) : xctx.moveTo(p.x, p.y));
+    xctx.closePath(); xctx.stroke();
+  }
+}
+function contactB64ToImage(b64) {
+  return loadImageFromB64(b64).then(im => { contactImg = im; drawContact(); });
+}
+function contactBody(extra) {
+  return Object.assign({ occlusion: +$('contactOccl').value,
+                         leak_limit: 0.35,
+                         plate: plateRequest() }, extra || {});
+}
+async function contactPost(suffix, body) {
+  const r = await fetch('/api/contact/' + encodeURIComponent(state.sample) + suffix, {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  });
+  const d = await r.json();
+  if (!r.ok) { $('contactBox').innerHTML = '<span class="err">' + (d.error || 'failed') +
+    ' (' + (d.code || 'error') + ')</span>'; throw new Error(d.error); }
+  return d;
+}
+$('contactOccl').oninput = () => { $('contactOcclVal').textContent = (+$('contactOccl').value).toFixed(2); };
+
+$('contactDerive').onclick = async () => {
+  if (!state.sample) { $('contactBox').textContent = 'load a built-in sample first'; return; }
+  const d = await contactPost('', contactBody());
+  await contactB64ToImage(d.region);
+  $('contactBox').innerHTML =
+    `claimed <b>${d.contact.n_claimed}</b> px · unclaimed <b>${d.contact.n_unclaimed}</b> px ` +
+    `(returned to author) · mean occlusion ${d.contact.mean_occlusion_claimed.toFixed(3)}`;
+};
+
+async function moveProduct(dx, dy) {
+  if (!state.sample) return;
+  const d = await contactPost('/move', contactBody({ dx, dy }));
+  await contactB64ToImage(d.image);
+  $('contactBox').innerHTML =
+    `new contact region ${JSON.stringify(d.region.bbox_px)} · ` +
+    `${d.region.n_pixels} px handed over · unclaimed left behind: ` +
+    `${d.region.unclaimed_left_behind} · clashes: ${d.region.clash_px}`;
+}
+$('contactMoveLeft').onclick = () => moveProduct(-24, 0);
+$('contactMoveRight').onclick = () => moveProduct(24, 0);
+
+// Graphical region edit: click points on the contact canvas, Enter closes.
+contactCanvas.addEventListener('click', ev => {
+  const r = contactCanvas.getBoundingClientRect();
+  editPoints.push({ x: (ev.clientX - r.left) * (contactCanvas.width / r.width),
+                    y: (ev.clientY - r.top) * (contactCanvas.height / r.height) });
+  drawContact();
+});
+window.addEventListener('keydown', ev => {
+  if (ev.key === 'Enter' && editPoints.length >= 3) drawContact();
+});
+$('contactCheck').onclick = async () => {
+  if (!state.sample) return;
+  const polygon = editPoints.length >= 3 ? editPoints.map(p => [p.x, p.y]) : null;
+  const d = await contactPost('/check', contactBody({ edit_polygon: polygon }));
+  await contactB64ToImage(d.image);
+  const c = d.check;
+  $('contactBox').innerHTML =
+    (c.ok ? '<b style="color:#57d6a0">contact verified</b>' : '<b class="err">contact check failed</b>') +
+    ` · coverage ${c.contact_coverage.toFixed(2)} · gap ${c.gap_px.toFixed(1)} px` +
+    ` · shadow contribution ${c.shadow_contribution.toFixed(3)}` +
+    ` · foreground retention ${c.foreground_retention.toFixed(3)}` +
+    (c.errors.length ? '<br>• ' + c.errors.join('<br>• ') : '');
+};
+
+$('contactExport').onclick = async () => {
+  if (!state.sample) return;
+  const d = await contactPost('/export', contactBody({ seed: 11 }));
+  await contactB64ToImage(d.images.floor_a);
+  const corr = d.floor_texture_correlation;
+  $('contactBox').innerHTML =
+    `two floor textures exported · claimed ${d.claimed_px} px · ` +
+    `shadow/floor texture correlation A ${corr.floor_a.toFixed(2)} / B ${corr.floor_b.toFixed(2)} ` +
+    `(high on both = shadow re-lit per floor, original tile not carried along)`;
+};
+
+$('contactAsset').onclick = async () => {
+  if (!state.sample) return;
+  const d = await contactPost('/asset', contactBody());
+  $('contactBox').innerHTML =
+    `v2 asset written to <b>${d.bundle}</b> · manifest format ${d.manifest} · ` +
+    `layer statuses ${JSON.stringify(d.statuses)}`;
+};
+drawContact();
 
 // initial
 drawStage();
